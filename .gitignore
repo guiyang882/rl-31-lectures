@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# LaTeX 编译产物
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+latex/*.pdf
+
+# 实验输出
+experiments/**/runs/
+experiments/**/checkpoints/
+experiments/**/logs/
+experiments/**/*.pt
+experiments/**/*.pth
+*.csv
+
+# 环境与系统
+.env
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# WorkBuddy 会话数据
+.workbuddy/

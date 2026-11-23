@@ -1,0 +1,114 @@
+%% main.tex — 单讲讲义模板（示例：第 01 讲）
+%% 编译：xelatex -shell-escape main.tex
+\documentclass[draft]{rl-lecture}
+
+\title{第 01 讲 \quad 从监督学习到强化学习：目标变了什么}
+\author{强化学习 31 讲}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{keypoint}[本讲结论]
+监督学习优化的是\emph{条件概率}，强化学习优化的是\emph{期望回报}。
+数据从"标注好的样本"变成"交互产生的轨迹"，这是两者最根本的分野。
+\end{keypoint}
+
+\section{从损失函数到回报函数}
+
+监督学习的目标可以写成：
+\begin{equation}
+  \theta^* = \argmin_{\theta}\ \mathcal{L}\big(y, f_\theta(x)\big)
+\end{equation}
+其中 $x, y$ 成对给定，模型只需要拟合它们之间的映射。
+
+强化学习里没有现成的 $y$。智能体在环境中动作，得到奖励 $r$，目标是最大化累积回报：
+\begin{equation}
+  \theta^* = \argmax_{\theta}\ \E_{\tau \sim \pi_\theta}\left[\sum_{t=0}^{T} \gamma^t r_t\right]
+  \label{eq:rl-objective}
+\end{equation}
+其中 $\tau = (s_0, a_0, r_0, s_1, \ldots)$ 是一条轨迹，$\gamma \in [0,1)$ 是折扣因子。
+
+\begin{intuition}
+监督学习像照着答案做题——每道题都有标准解；强化学习像摸着石头过河——只有走完全程才知道好坏，
+而且"好"与"不好"往往要等很久才显现。
+\end{intuition}
+
+\section{MDP 五元组}
+
+\begin{definition}[马尔可夫决策过程]
+一个 MDP 由五元组 $(\mathcal{S}, \mathcal{A}, P, R, \gamma)$ 构成：
+\begin{itemize}[leftmargin=2em]
+  \item $\mathcal{S}$：状态空间
+  \item $\mathcal{A}$：动作空间
+  \item $P(s' \mid s, a)$：状态转移概率
+  \item $R(s, a, s')$：奖励函数
+  \item $\gamma$：折扣因子
+\end{itemize}
+\end{definition}
+
+\begin{pitfall}[折扣因子的误解]
+$\gamma$ 不只是"未来收益打折"。它同时决定了信用分配的距离——$\gamma$ 越小，智能体越短视，
+越难学到需要长期铺垫的策略。第 02 讲会用具体数字算清楚这件事。
+\end{pitfall}
+
+\section{第一个实验：基线对比}
+
+在同一个 CartPole 环境里跑两个策略：
+\begin{enumerate}[leftmargin=2em]
+  \item 随机策略：每个动作等概率采样
+  \item 模仿策略：用一个简单规则（杆往左倒就往左推）
+\end{enumerate}
+
+\lstinputlisting[caption={CartPole 随机策略基线}, label={lst:baseline}]{code/baseline.py}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/cartpole-baseline.pdf}
+  \caption{随机策略与规则策略的回报对比。数值保留两位小数。}
+  \label{fig:baseline}
+\end{figure}
+
+\begin{table}[htbp]
+  \centering
+  \caption{两种策略的 100 局平均回报}
+  \begin{tabular}{lcc}
+    \toprule
+    策略 & 平均回报 & 标准差 \\
+    \midrule
+    随机 & 22.31 & 8.42 \\
+    规则 & 168.57 & 23.14 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{伪代码：一个完整的交互循环}
+
+\begin{algorithm}[H]
+  \caption{随机策略的交互循环}
+  \begin{algorithmic}[1]
+    \Require 环境 $env$，回合数 $N$
+    \For{$i = 1$ \textbf{to} $N$}
+      \State $s \leftarrow env.reset()$
+      \While{未结束}
+        \State $a \leftarrow \text{sample from } \pi(\cdot \mid s)$
+        \State $s', r, done \leftarrow env.step(a)$
+        \State 累计回报 $R \leftarrow R + r$
+        \State $s \leftarrow s'$
+      \EndWhile
+      \State 记录本回合回报 $R$
+    \EndFor
+    \Ensure 回报序列 $\{R_i\}_{i=1}^{N}$
+  \end{algorithmic}
+\end{algorithm}
+
+\section{本讲小结}
+
+式~\ref{eq:rl-objective} 是整门课的起点。后面所有的算法——Q-learning、PPO、GRPO——本质上都是在解决
+"如何优化这个期望回报"的不同路径。
+
+\begin{keypoint}[下一讲预告]
+第 02 讲：MDP 五元组——把决策问题形式化。我们会把"点外卖评分"和"客服对话"各写成一个 MDP。
+\end{keypoint}
+
+\end{document}
