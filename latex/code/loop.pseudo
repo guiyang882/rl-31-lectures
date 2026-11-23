@@ -1,0 +1,14 @@
+输入:  环境 env, 回合数 N
+输出: 回报序列 {R_i}
+
+ 1  for i = 1 to N do
+ 2      s <- env.reset()
+ 3      R <- 0
+ 4      while not done do
+ 5          a <- sample from pi(. | s)
+ 6          s', r, done <- env.step(a)
+ 7          R <- R + r
+ 8          s <- s'
+ 9      end while
+10      record R_i = R
+11  end for

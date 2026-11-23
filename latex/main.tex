@@ -1,6 +1,6 @@
 %% main.tex — 单讲讲义模板（示例：第 01 讲）
-%% 编译：xelatex -shell-escape main.tex
-\documentclass[draft]{rl-lecture}
+%% 编译：xelatex main.tex（两遍）
+\documentclass{rl-lecture}
 
 \title{第 01 讲 \quad 从监督学习到强化学习：目标变了什么}
 \author{强化学习 31 讲}
@@ -64,7 +64,8 @@ $\gamma$ 不只是"未来收益打折"。它同时决定了信用分配的距离
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/cartpole-baseline.pdf}
+  \fbox{\parbox{0.72\linewidth}{\centering\vspace{2cm}
+    [训练曲线图待生成：随机策略 vs 规则策略的回报对比]\vspace{2cm}}}
   \caption{随机策略与规则策略的回报对比。数值保留两位小数。}
   \label{fig:baseline}
 \end{figure}
@@ -84,23 +85,7 @@ $\gamma$ 不只是"未来收益打折"。它同时决定了信用分配的距离
 
 \section{伪代码：一个完整的交互循环}
 
-\begin{algorithm}[H]
-  \caption{随机策略的交互循环}
-  \begin{algorithmic}[1]
-    \Require 环境 $env$，回合数 $N$
-    \For{$i = 1$ \textbf{to} $N$}
-      \State $s \leftarrow env.reset()$
-      \While{未结束}
-        \State $a \leftarrow \text{sample from } \pi(\cdot \mid s)$
-        \State $s', r, done \leftarrow env.step(a)$
-        \State 累计回报 $R \leftarrow R + r$
-        \State $s \leftarrow s'$
-      \EndWhile
-      \State 记录本回合回报 $R$
-    \EndFor
-    \Ensure 回报序列 $\{R_i\}_{i=1}^{N}$
-  \end{algorithmic}
-\end{algorithm}
+\lstinputlisting[style=pseudocode, caption={随机策略的交互循环}, label={alg:loop}]{code/loop.pseudo}
 
 \section{本讲小结}
 
