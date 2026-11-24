@@ -3,7 +3,7 @@
 \documentclass{rl-lecture}
 
 \title{第 01 讲 \quad 从监督学习到强化学习：目标变了什么}
-\author{强化学习 31 讲}
+\author{强化学习讲义手册}
 \date{}
 
 \begin{document}
@@ -33,6 +33,14 @@
 监督学习像照着答案做题——每道题都有标准解；强化学习像摸着石头过河——只有走完全程才知道好坏，
 而且"好"与"不好"往往要等很久才显现。
 \end{intuition}
+
+\begin{pitfall}[规则策略满分，是不是就不需要学了？]
+表~\ref{tab:baseline} 里规则策略拿到满分 500 且方差为 0——但别急着下"手写规则就够了"的结论。
+这条规则是我们\emph{事先知道} CartPole 的物理结构（杆角、角速度、小车位置）才写出来的，
+它把这个环境的答案直接编码进了 if-else。换个环境、或者状态维度变了，这条规则立刻失效。
+强化学习要学的不是"某个环境的规则"，而是\emph{从交互数据中自己找到策略}的能力——
+第 10 讲的 DQN 就是要在不知道这些先验的情况下，靠试错逼近甚至超过这个满分基线。
+\end{pitfall}
 
 \section{MDP 五元组}
 
@@ -64,21 +72,21 @@ $\gamma$ 不只是"未来收益打折"。它同时决定了信用分配的距离
 
 \begin{figure}[htbp]
   \centering
-  \fbox{\parbox{0.72\linewidth}{\centering\vspace{2cm}
-    [训练曲线图待生成：随机策略 vs 规则策略的回报对比]\vspace{2cm}}}
-  \caption{随机策略与规则策略的回报对比。数值保留两位小数。}
+  \includegraphics[width=0.92\linewidth]{../figures/L01-return-curves.png}
+  \caption{随机策略与规则策略的 100 局回报对比（10 回合滑动平均，seed=42）。浅色为原始值，深色为滑动平均。数据来源：\texttt{experiments/L01-rl-vs-sl/results.csv}。}
   \label{fig:baseline}
 \end{figure}
 
 \begin{table}[htbp]
   \centering
-  \caption{两种策略的 100 局平均回报}
-  \begin{tabular}{lcc}
+  \caption{两种策略的 100 局回报统计（CartPole-v1，seed=42）}
+  \label{tab:baseline}
+  \begin{tabular}{lcccc}
     \toprule
-    策略 & 平均回报 & 标准差 \\
+    策略 & 平均回报 & 标准差 & 最小值 & 最大值 \\
     \midrule
-    随机 & 22.31 & 8.42 \\
-    规则 & 168.57 & 23.14 \\
+    随机 & 25.22 & 14.12 & 9.00 & 87.00 \\
+    规则 & 500.00 & 0.00 & 500.00 & 500.00 \\
     \bottomrule
   \end{tabular}
 \end{table}
